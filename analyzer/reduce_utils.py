@@ -7,31 +7,31 @@ import net as nt
 from net_gen import gen_nets
 import prepro_utils as ppu
 '''
-  ¶¨ÒåÍøÔ¼¼ò¹¤¾ßÀà(Note:Õë¶ÔÎŞÑ¡Ôñ½á¹¹ÊµÀıÍø)
+  å®šä¹‰ç½‘çº¦ç®€å·¥å…·ç±»(Note:é’ˆå¯¹æ— é€‰æ‹©ç»“æ„å®ä¾‹ç½‘)
 '''
 
 
-# 1.Ô¼¼òÄÚÍøÖĞ±äÇ¨(ps:ÎŞÑ¡Ôñ½á¹¹)-----------------------------------------------
+# 1.çº¦ç®€å†…ç½‘ä¸­å˜è¿(ps:æ— é€‰æ‹©ç»“æ„)-----------------------------------------------
 def reduce_inner_net(inner_net: InnerNet, pending_reduce_trans):
 
-    visiting_queue = [inner_net]  # ÔËĞĞ¶ÓÁĞ
+    visiting_queue = [inner_net]  # è¿è¡Œé˜Ÿåˆ—
     while visiting_queue:
-        # ³ö¶ÔÒ»¸öÄÚÍø,ÒÔÆäÉî¿½±´½øĞĞÇ¨ÒÆ
+        # å‡ºå¯¹ä¸€ä¸ªå†…ç½‘,ä»¥å…¶æ·±æ‹·è´è¿›è¡Œè¿ç§»
         from_net = copy.deepcopy(visiting_queue.pop(0))
         # from_net.net_to_dot('from_ep_net')
-        # Note:Ã¿´ÎÔ¼¼òÇ°Ğë¶Ô²¢·¢¿éÖĞÈßÓà¿âËù½øĞĞµ÷Õû,·ñÔòÔ¼¼ò»á³ö´í
+        # Note:æ¯æ¬¡çº¦ç®€å‰é¡»å¯¹å¹¶å‘å—ä¸­å†—ä½™åº“æ‰€è¿›è¡Œè°ƒæ•´,å¦åˆ™çº¦ç®€ä¼šå‡ºé”™
         from_net = adjust_redu_places(from_net, pending_reduce_trans)
-        # ps:È·¶¨ÏÖÔÚ»¹ĞèÒªÔ¼¼ò±äÇ¨¼¯
+        # ps:ç¡®å®šç°åœ¨è¿˜éœ€è¦çº¦ç®€å˜è¿é›†
         cur_reduce_trans = list(
             set(from_net.trans).intersection(pending_reduce_trans))
         # print('internal_trans:', internal_trans)
-        # ÈôÃ»ÓĞ´ıÔ¼¼ò±äÇ¨ÔòÖ±½Ó·µ»Ø,±íÊ¾ÊÇ×î¼ò
+        # è‹¥æ²¡æœ‰å¾…çº¦ç®€å˜è¿åˆ™ç›´æ¥è¿”å›,è¡¨ç¤ºæ˜¯æœ€ç®€
         if not cur_reduce_trans:
             # from_net.inner_to_dot('from')
             return from_net
         try:
 
-            # Note:È·¶¨Ô¼¼ò±äÇ¨,ÓÅÏÈ¼¶:AND>LOOP>SEQ
+            # Note:ç¡®å®šçº¦ç®€å˜è¿,ä¼˜å…ˆçº§:AND>LOOP>SEQ
             block, type = deter_reduce_block(cur_reduce_trans, from_net)
             print('test:', block, type)
             if type == 'AND':
@@ -59,8 +59,8 @@ def reduce_inner_net(inner_net: InnerNet, pending_reduce_trans):
             continue
 
 
-# Ã¿´ÎÔ¼¼òÇ°Ğè¶Ô²¢·¢¿éÖĞÈßÓà¿âËù½øĞĞµ÷Õû,·ñÔòÔ¼¼ò»á³ö´í
-# ¼´:split->place->join==>split->place->redu_t->redu_place->join
+# æ¯æ¬¡çº¦ç®€å‰éœ€å¯¹å¹¶å‘å—ä¸­å†—ä½™åº“æ‰€è¿›è¡Œè°ƒæ•´,å¦åˆ™çº¦ç®€ä¼šå‡ºé”™
+# å³:split->place->join==>split->place->redu_t->redu_place->join
 def adjust_redu_places(from_net: InnerNet, pending_reduce_trans):
     places = from_net.places
     flows = from_net.flows
@@ -74,12 +74,12 @@ def adjust_redu_places(from_net: InnerNet, pending_reduce_trans):
                     nt.get_preset(flows, to_tran)) > 1:
                 redu_tran = '{}_t'.format(place)
                 redu_place = '{}_p'.format(place)
-                # Ìí¼Ó¿âËù¼°±äÇ¨µ½netÖĞ
+                # æ·»åŠ åº“æ‰€åŠå˜è¿åˆ°netä¸­
                 from_net.add_places([redu_place])
                 from_net.add_trans([redu_tran])
                 from_net.label_map[redu_tran] = redu_tran
                 pending_reduce_trans.append(redu_tran)
-                # ¸üĞÂÁ÷¹ØÏµ
+                # æ›´æ–°æµå…³ç³»
                 from_net.rov_flow(place, to_tran)
                 from_net.add_flow(place, redu_tran)
                 from_net.add_flow(redu_tran, redu_place)
@@ -87,7 +87,7 @@ def adjust_redu_places(from_net: InnerNet, pending_reduce_trans):
     return from_net
 
 
-# Note:È·¶¨Ô¼¼ò±äÇ¨,ÓÅÏÈ¼¶:AND>LOOP>SEQ
+# Note:ç¡®å®šçº¦ç®€å˜è¿,ä¼˜å…ˆçº§:AND>LOOP>SEQ
 def deter_reduce_block(internal_trans, from_net: InnerNet):
 
     for internal_tran in internal_trans:
@@ -108,7 +108,7 @@ def deter_reduce_block(internal_trans, from_net: InnerNet):
             return block, type
 
 
-# »ñÈ¡Ò»¸öÔ¼¼òµÄ¿é
+# è·å–ä¸€ä¸ªçº¦ç®€çš„å—
 def get_reduce_block(tran, from_net: InnerNet):
     tran_preset = nt.get_preset(from_net.flows, tran)
     pe = tran_preset[0]
@@ -126,30 +126,30 @@ def get_reduce_block(tran, from_net: InnerNet):
     tx_preset = set(nt.get_preset(from_net.flows,
                                   tx)).intersection(from_net.places)
     print('test:', tran, pe, px)
-    # tranÊÇÒ»¸öÔª²¢·¢½á¹¹
+    # tranæ˜¯ä¸€ä¸ªå…ƒå¹¶å‘ç»“æ„
     if len(tran_preset) == 1 and len(tran_postset) == 1 and len(
             pe_preset
     ) == 1 and len(pe_postset) == 1 and len(px_preset) == 1 and len(
             px_postset) == 1 and len(te_postset) > 1 and len(tx_preset) > 1:
         return tran, 'AND'
 
-    # tranÊÇÒ»¸öÔªµü´ú½á¹¹
+    # tranæ˜¯ä¸€ä¸ªå…ƒè¿­ä»£ç»“æ„
     dfs_obj = cu.DFS()
     source = from_net.source
     to_graph = from_net.to_graph()
     dfs_obj.dfs(source, to_graph)
     circles = dfs_obj.circles
     for circle in circles:
-        # ÔªÑ­»·<p,t,p',tb>
+        # å…ƒå¾ªç¯<p,t,p',tb>
         if len(circle) == 4 and circle[1] == tran:
             return circle, 'LOOP'
 
-    # tranÊÇÒ»¸öÔªË³Ğò½á¹¹(Note:ÓÅÏÈ¼¶×îµÍ)
+    # tranæ˜¯ä¸€ä¸ªå…ƒé¡ºåºç»“æ„(Note:ä¼˜å…ˆçº§æœ€ä½)
     if len(tran_preset) == 1 and len(tran_postset) == 1:
         return tran, 'SEQ'
 
 
-# Ô¼¼òÒ»¸öÔª²¢·¢±äÇ¨
+# çº¦ç®€ä¸€ä¸ªå…ƒå¹¶å‘å˜è¿
 def reduce_one_and_tran(tran, from_net: InnerNet):
     pe = nt.get_preset(from_net.flows, tran)[0]
     te = nt.get_preset(from_net.flows, pe)[0]
@@ -181,19 +181,19 @@ def reduce_one_and_tran(tran, from_net: InnerNet):
         from_net.rov_flow(px1, tx)
         from_net.rov_flow(tx, ptx)
         for tran in pe1_preset:
-            # Note:ÒÆ³ıÒÑÓĞµÄÁ÷
+            # Note:ç§»é™¤å·²æœ‰çš„æµ
             from_net.rov_flow(tran, pe1)
             from_net.add_flow(tran, pte)
         for tran in pe1_postset:
-            # Note:ÒÆ³ıÒÑÓĞµÄÁ÷
+            # Note:ç§»é™¤å·²æœ‰çš„æµ
             from_net.rov_flow(pe1, tran)
             from_net.add_flow(pte, tran)
         for tran in ptx_preset:
-            # Note:ÒÆ³ıÒÑÓĞµÄÁ÷
+            # Note:ç§»é™¤å·²æœ‰çš„æµ
             from_net.rov_flow(tran, ptx)
             from_net.add_flow(tran, px1)
         for tran in ptx_postset:
-            # Note:ÒÆ³ıÒÑÓĞµÄÁ÷
+            # Note:ç§»é™¤å·²æœ‰çš„æµ
             from_net.rov_flow(ptx, tran)
             from_net.add_flow(px1, tran)
         # print('test.....................')
@@ -213,7 +213,7 @@ def reduce_one_and_tran(tran, from_net: InnerNet):
         return from_net
 
 
-# Ô¼¼òÒ»¸öÔªµü´ú±äÇ¨
+# çº¦ç®€ä¸€ä¸ªå…ƒè¿­ä»£å˜è¿
 def reduce_one_inter_tran(circle, from_net: InnerNet):
     pe = circle[0]
     tran = circle[1]
@@ -230,17 +230,17 @@ def reduce_one_inter_tran(circle, from_net: InnerNet):
     from_net.rov_flow(px, tb)
     from_net.rov_flow(tb, pe)
     for tran in px_preset:
-        # Note:ÒÆ³ıÒÑÓĞµÄÁ÷
+        # Note:ç§»é™¤å·²æœ‰çš„æµ
         from_net.rov_flow(tran, px)
         from_net.add_flow(tran, pe)
     for tran in px_postset:
-        # Note:ÒÆ³ıÒÑÓĞµÄÁ÷
+        # Note:ç§»é™¤å·²æœ‰çš„æµ
         from_net.rov_flow(px, tran)
         from_net.add_flow(pe, tran)
     return from_net
 
 
-# Ô¼¼òÒ»¸öÔªË³Ğò±äÇ¨
+# çº¦ç®€ä¸€ä¸ªå…ƒé¡ºåºå˜è¿
 def reduce_one_seq_tran(tran, from_net: InnerNet):
     pe = nt.get_preset(from_net.flows, tran)[0]
     px = nt.get_postset(from_net.flows, tran)[0]
@@ -253,11 +253,11 @@ def reduce_one_seq_tran(tran, from_net: InnerNet):
     from_net.rov_flow(pe, tran)
     from_net.rov_flow(tran, px)
     for tran in px_preset:
-        # Note:ÒÆ³ıÒÑÓĞµÄÁ÷
+        # Note:ç§»é™¤å·²æœ‰çš„æµ
         from_net.rov_flow(tran, px)
         from_net.add_flow(tran, pe)
     for tran in px_postset:
-        # Note:ÒÆ³ıÒÑÓĞµÄÁ÷
+        # Note:ç§»é™¤å·²æœ‰çš„æµ
         print('rov flow:', px, tran)
         from_net.rov_flow(px, tran)
         from_net.add_flow(pe, tran)
@@ -266,17 +266,4 @@ def reduce_one_seq_tran(tran, from_net: InnerNet):
     return from_net
 
 
-# -------------------------------²âÊÔ---------------------------------#
 
-if __name__ == '__main__':
-
-    net = gen_nets('/Users/moqi/Desktop/ÁÙÊ±ÎÄ¼ş/2023.xml')[1]
-    net = ppu.insert_start_end_trans(net, 0)
-    net = ppu.insert_and_split_join(net, 0)
-    net.net_to_dot('net', True)
-    inner_net = get_inner_net(net)
-    # inner_net.print_infor()
-    inner_net = reduce_inner_net(inner_net, ['T5', 'T4'])
-    inner_net.inner_to_dot('abc')
-
-# -------------------------------------------------------------------#
