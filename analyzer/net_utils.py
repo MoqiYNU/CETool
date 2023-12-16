@@ -8,33 +8,33 @@ import net as nt
 from net_gen import gen_nets
 
 
-# 1.1²úÉú¿É´ïÍ¼(Î´¿¼ÂÇ×ÊÔ´ºÍÊı¾İ)-------------------------------------------------
+# 1.1äº§ç”Ÿå¯è¾¾å›¾(æœªè€ƒè™‘èµ„æºå’Œæ•°æ®)-------------------------------------------------
 def gen_rg(net: nt.OpenNet):
 
     source, sinks = net.get_start_ends()
 
-    gen_trans = []  # ²úÉúµÄ±äÇ¨¼¯
+    gen_trans = []  # äº§ç”Ÿçš„å˜è¿é›†
 
-    # ÔËĞĞ¶ÓÁĞºÍÒÑ·ÃÎÊ¶ÓÁĞ
+    # è¿è¡Œé˜Ÿåˆ—å’Œå·²è®¿é—®é˜Ÿåˆ—
     visiting_queue = [source]
     visited_queue = [source]
 
-    # µü´ú¼ÆËã
+    # è¿­ä»£è®¡ç®—
     while visiting_queue:
         marking = visiting_queue.pop(0)
         enable_trans = nt.get_enable_trans(net, marking)
         for enable_tran in enable_trans:
-            # 1)²úÉúºó¼Ì±êÊ¶
+            # 1)äº§ç”Ÿåç»§æ ‡è¯†
             preset = nt.get_preset(net.get_flows(), enable_tran)
             postset = nt.get_postset(net.get_flows(), enable_tran)
             succ_makring = nt.succ_makring(marking.get_infor(), preset,
                                            postset)
-            # 2)²úÉúºó¼Ì±äÇ¨(Note:Ç¨ÒÆ¶¯×÷ÒÔ±êºÅ½øĞĞ±êÊ¶)
+            # 2)äº§ç”Ÿåç»§å˜è¿(Note:è¿ç§»åŠ¨ä½œä»¥æ ‡å·è¿›è¡Œæ ‡è¯†)
             # tran = Tran(marking, label_map[enable_tran], succ_makring)
-            # Ç¨ÒÆ¶¯×÷ÒÔ±äÇ¨½øĞĞ±êÊ¶
+            # è¿ç§»åŠ¨ä½œä»¥å˜è¿è¿›è¡Œæ ‡è¯†
             tran = Tran(marking, enable_tran, succ_makring)
             gen_trans.append(tran)
-            # Ìí¼ÓÎ´·ÃÎÊµÄ×´Ì¬
+            # æ·»åŠ æœªè®¿é—®çš„çŠ¶æ€
             if not nt.marking_is_exist(succ_makring, visited_queue):
                 visiting_queue.append(succ_makring)
                 visited_queue.append(succ_makring)
@@ -42,39 +42,39 @@ def gen_rg(net: nt.OpenNet):
     return LTS(source, sinks, visited_queue, gen_trans)
 
 
-# 1.2²úÉú¿É´ïÍ¼(¿¼ÂÇ×ÊÔ´Ô¼Êø)----------------------------------------------------
+# 1.2äº§ç”Ÿå¯è¾¾å›¾(è€ƒè™‘èµ„æºçº¦æŸ)----------------------------------------------------
 def gen_rg_with_res(net):
 
     source, sinks = net.get_start_ends()
     trans, rout_trans, label_map = net.get_trans()
 
-    gen_trans = []  # ²úÉúµÄ±äÇ¨¼¯
+    gen_trans = []  # äº§ç”Ÿçš„å˜è¿é›†
 
-    # ÔËĞĞ¶ÓÁĞºÍÒÑ·ÃÎÊ¶ÓÁĞ
+    # è¿è¡Œé˜Ÿåˆ—å’Œå·²è®¿é—®é˜Ÿåˆ—
     print('net.init_res', net.init_res)
     visiting_queue = [[source, net.init_res]]
     visited_queue = [source]
 
-    # µü´ú¼ÆËã
+    # è¿­ä»£è®¡ç®—
     while visiting_queue:
         [marking, res] = visiting_queue.pop(0)
         enable_trans = nt.get_enable_trans(net, marking)
         for enable_tran in enable_trans:
-            # Note:±ÜÃâ·ÖÖ§ÖĞÌáÇ°½«×ÊÔ´ÏûºÄµô(Ã¿¸ö·ÖÖ§»ñµÃ×ÊÔ´ÏàÍ¬)~~~~~~~~~~~~~~~~~~
+            # Note:é¿å…åˆ†æ”¯ä¸­æå‰å°†èµ„æºæ¶ˆè€—æ‰(æ¯ä¸ªåˆ†æ”¯è·å¾—èµ„æºç›¸åŒ)~~~~~~~~~~~~~~~~~~
             res_copy = copy.deepcopy(res)
             req_res = net.req_res_map[enable_tran]
-            # Èôµ±Ç°×ÊÔ´²»³ä×ã,ÔòÌø¹ıµ±Ç°Ê¹ÄÜ±äÇ¨
+            # è‹¥å½“å‰èµ„æºä¸å……è¶³,åˆ™è·³è¿‡å½“å‰ä½¿èƒ½å˜è¿
             if not res_is_suff(res_copy, req_res):
                 continue
-            # 1)²úÉúºó¼Ì±êÊ¶
+            # 1)äº§ç”Ÿåç»§æ ‡è¯†
             preset = nt.get_preset(net.get_flows(), enable_tran)
             postset = nt.get_postset(net.get_flows(), enable_tran)
             succ_makring = nt.succ_makring(marking.get_infor(), preset,
                                            postset)
-            # 2)²úÉúºó¼Ì±äÇ¨(Note:Ç¨ÒÆ¶¯×÷ÒÔ±êºÅ½øĞĞ±êÊ¶)
+            # 2)äº§ç”Ÿåç»§å˜è¿(Note:è¿ç§»åŠ¨ä½œä»¥æ ‡å·è¿›è¡Œæ ‡è¯†)
             tran = Tran(marking, label_map[enable_tran], succ_makring)
             gen_trans.append(tran)
-            # Ìí¼ÓÎ´·ÃÎÊµÄ×´Ì¬
+            # æ·»åŠ æœªè®¿é—®çš„çŠ¶æ€
             if not nt.marking_is_exist(succ_makring, visited_queue):
                 # print(
                 #     'succ_res:', succ_makring.get_infor(),
@@ -90,7 +90,7 @@ def gen_rg_with_res(net):
     return LTS(source, sinks, visited_queue, gen_trans)
 
 
-# ÅĞ¶Ïµ±Ç°×ÊÔ´ÊÇ·ñ³ä×ã
+# åˆ¤æ–­å½“å‰èµ„æºæ˜¯å¦å……è¶³
 def res_is_suff(res, req_res):
     cou = Counter(res)
     cou.subtract(Counter(req_res))
@@ -101,9 +101,9 @@ def res_is_suff(res, req_res):
     return True
 
 
-# »ñÈ¡±äÇ¨Ç¨ÒÆºóµÄ×ÊÔ´¼¯ºÏ
+# è·å–å˜è¿è¿ç§»åçš„èµ„æºé›†åˆ
 def succ_res(res, req_res, rel_res):
-    # ÒÆ³ıÇ°¼¯
+    # ç§»é™¤å‰é›†
     for rr in req_res:
         if rr in res:
             res.remove(rr)
@@ -111,35 +111,35 @@ def succ_res(res, req_res, rel_res):
     return succ_res
 
 
-# 2.ÀûÓÃÎÈ¹Ì¼¯²úÉú¿É´ïÍ¼(Î´¿¼ÂÇ×ÊÔ´ºÍÊı¾İ)----------------------------------------------
+# 2.åˆ©ç”¨ç¨³å›ºé›†äº§ç”Ÿå¯è¾¾å›¾(æœªè€ƒè™‘èµ„æºå’Œæ•°æ®)----------------------------------------------
 def gen_rg_with_subset(net: nt.OpenNet):
 
     source, sinks = net.get_start_ends()
     label_map = net.label_map
-    gen_trans = []  # ²úÉúµÄ±äÇ¨¼¯
+    gen_trans = []  # äº§ç”Ÿçš„å˜è¿é›†
 
-    # ÔËĞĞ¶ÓÁĞºÍÒÑ·ÃÎÊ¶ÓÁĞ
+    # è¿è¡Œé˜Ÿåˆ—å’Œå·²è®¿é—®é˜Ÿåˆ—
     visiting_queue = [source]
     visited_queue = [source]
 
-    # µü´ú¼ÆËã
+    # è¿­ä»£è®¡ç®—
     while visiting_queue:
         marking = visiting_queue.pop(0)
         # print(marking.get_infor())
-        # Note:Ö»Ç¨ÒÆÎÈ¹Ì¼¯ÖĞÊ¹ÄÜ»î¶¯(Î´¿¼ÂÇÏû³ıºöÊÓÎÊÌâ)
+        # Note:åªè¿ç§»ç¨³å›ºé›†ä¸­ä½¿èƒ½æ´»åŠ¨(æœªè€ƒè™‘æ¶ˆé™¤å¿½è§†é—®é¢˜)
         enable_trans = nt.get_enable_trans(net, marking)
         S = get_stubset(net, marking)
         enable_trans = list(set(enable_trans).intersection(set(S)))
         for enable_tran in enable_trans:
-            # 1)²úÉúºó¼Ì±êÊ¶
+            # 1)äº§ç”Ÿåç»§æ ‡è¯†
             preset = nt.get_preset(net.get_flows(), enable_tran)
             postset = nt.get_postset(net.get_flows(), enable_tran)
             succ_makring = nt.succ_makring(marking.get_infor(), preset,
                                            postset)
-            # 2)²úÉúºó¼Ì±äÇ¨(Note:Ç¨ÒÆ¶¯×÷ÒÔ±êºÅ½øĞĞ±êÊ¶)
+            # 2)äº§ç”Ÿåç»§å˜è¿(Note:è¿ç§»åŠ¨ä½œä»¥æ ‡å·è¿›è¡Œæ ‡è¯†)
             tran = Tran(marking, label_map[enable_tran], succ_makring)
             gen_trans.append(tran)
-            # Ìí¼ÓÎ´·ÃÎÊµÄ×´Ì¬
+            # æ·»åŠ æœªè®¿é—®çš„çŠ¶æ€
             if not nt.marking_is_exist(succ_makring, visited_queue):
                 visiting_queue.append(succ_makring)
                 visited_queue.append(succ_makring)
@@ -147,15 +147,15 @@ def gen_rg_with_subset(net: nt.OpenNet):
     return LTS(source, sinks, visited_queue, gen_trans)
 
 
-# ¼ÆËãÌØ¶¨±êÊ¶µÄÎÈ¹Ì¼¯(Note:Î´¿¼ÂÇºöÊÓ)
+# è®¡ç®—ç‰¹å®šæ ‡è¯†çš„ç¨³å›ºé›†(Note:æœªè€ƒè™‘å¿½è§†)
 def get_stubset(net, marking):
-    S = []  # ·µ»ØÎÈ¹Ì¼¯
-    U = []  # Î´´¦ÀíÇ¨ÒÆ¼¯
+    S = []  # è¿”å›ç¨³å›ºé›†
+    U = []  # æœªå¤„ç†è¿ç§»é›†
     enable_trans = nt.get_enable_trans(net, marking)
     # print(marking.get_infor(), enable_trans)
-    if not enable_trans:  # Ã»ÓĞÊ¹ÄÜÇ¨ÒÆ,Ö±½Ó·µ»Ø¿ÕÎÈ¹Ì¼¯S
+    if not enable_trans:  # æ²¡æœ‰ä½¿èƒ½è¿ç§»,ç›´æ¥è¿”å›ç©ºç¨³å›ºé›†S
         return S
-    else:  # ÓĞÊ¹ÄÜÇ¨ÒÆ,Ëæ»úÑ¡ÔñÒ»¸öÊ¹ÄÜÇ¨ÒÆ
+    else:  # æœ‰ä½¿èƒ½è¿ç§»,éšæœºé€‰æ‹©ä¸€ä¸ªä½¿èƒ½è¿ç§»
         first_act = enable_trans[0]
         # print('first_act', first_act)
         S.append(first_act)
@@ -166,46 +166,46 @@ def get_stubset(net, marking):
                 N = get_disenabling_trans(net, act)
             else:
                 N = get_enabling_trans(net, act, marking)
-            # ±ÜÃâÖØ¸´Ìí¼Ó
+            # é¿å…é‡å¤æ·»åŠ 
             subset = set(N) - set(S)
             U = list(set(U).union(subset))
-            # Ìí¼ÓÎÈ¹Ì¼¯µ½S
+            # æ·»åŠ ç¨³å›ºé›†åˆ°S
             S = list(set(S).union(N))
         return S
 
 
-# »ñÈ¡µ¼ÖÂ±äÇ¨Ê¹ÄÜµÄ±äÇ¨¼¯(ÒÔId±êÊ¶)
+# è·å–å¯¼è‡´å˜è¿ä½¿èƒ½çš„å˜è¿é›†(ä»¥Idæ ‡è¯†)
 def get_enabling_trans(net, tran, marking):
     enabling_trans = set()
     places = marking.get_infor()
     preset = nt.get_preset(net.get_flows(), tran)
     for place in preset:
-        # Ìø¹ıÒÑ¾­º¬ÓĞÍĞ¿ÏµÄ¿âËù
+        # è·³è¿‡å·²ç»å«æœ‰æ‰˜è‚¯çš„åº“æ‰€
         if place in places:
             continue
-        # ²»ÖØ¸´
+        # ä¸é‡å¤
         enabling_trans = enabling_trans.union(
             set(nt.get_preset(net.get_flows(), place)))
     return list(enabling_trans)
 
 
-# »ñÈ¡±äÇ¨µÄ³åÍ»±äÇ¨¼¯(ÒÔId±êÊ¶)
+# è·å–å˜è¿çš„å†²çªå˜è¿é›†(ä»¥Idæ ‡è¯†)
 def get_disenabling_trans(net, tran):
     disenabling_trans = []
     trans, ctrl_trans, label_map = net.get_trans()
     preset = nt.get_preset(net.get_flows(), tran)
     for temp_tran in trans:
-        # ²»°üÀ¨×Ô¼º
+        # ä¸åŒ…æ‹¬è‡ªå·±
         if temp_tran == tran:
             continue
         temp_preset = nt.get_preset(net.get_flows(), temp_tran)
-        # Ç°¼¯Ïà½»(³åÍ»)
+        # å‰é›†ç›¸äº¤(å†²çª)
         if set(preset).intersection(set(temp_preset)):
             disenabling_trans.append(temp_tran)
     return disenabling_trans
 
 
-# 3.»ñÈ¡markingsµÄÖÕÖ¹±êÊ¶¼¯----------------------------------------------
+# 3.è·å–markingsçš„ç»ˆæ­¢æ ‡è¯†é›†----------------------------------------------
 def get_sink_markings(markings, sinks):
     ends = []
     for marking in markings:
@@ -214,31 +214,4 @@ def get_sink_markings(markings, sinks):
     return ends
 
 
-# -------------------------------²âÊÔ---------------------------------#
 
-if __name__ == '__main__':
-
-    # net = get_compose_net('/Users/moqi/Desktop/Petri net 1 2.xml')
-    # lts = gen_rg_with_subset(net)
-    # start, ends, states, trans = lts.get_infor()
-    # for state in ends:
-    #     print(state.get_infor())
-    # # print(start, ends, states)
-    # for tran in trans:
-    #     state_from, label, state_to = tran.get_infor()
-    #     print(state_from.get_infor(), label, state_to.get_infor())
-
-    nets = gen_nets('/Users/moqi/Desktop/ÁÙÊ±ÎÄ¼ş/Ca-7.xml')
-    comp_net = get_compose_net(nets)
-    rg = gen_rg_with_res(comp_net)
-    print(len(rg.states))
-    # print('PR:', len(nets), 'PA:', len(comp_net.places), 'TR:',
-    #       len(comp_net.trans))
-    # rg = gen_rg_with_res(comp_net)
-    # # rg = gen_rg(comp_net)
-    # rg.rg_to_dot()
-    # frags = decompose_net(comp_net)
-    # for index, frag in enumerate(frags):
-    #     frag.net_to_dot(str(index))
-
-# -------------------------------------------------------------------#
