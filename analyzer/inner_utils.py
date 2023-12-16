@@ -7,7 +7,7 @@ from collections import Counter
 import circle_utils as cu
 
 
-# 1.»ñÈ¡µ¥¸ö×éÖ¯µÄÄÚÍø(½»»¥±äÇ¨ÉèÎª¿Õ,ÓÉ×éºÏ»ñÈ¡)-----------------------------
+# 1.è·å–å•ä¸ªç»„ç»‡çš„å†…ç½‘(äº¤äº’å˜è¿è®¾ä¸ºç©º,ç”±ç»„åˆè·å–)-----------------------------
 def get_inner_net(net: nt.OpenNet):
 
     source, sinks = net.get_start_ends()
@@ -16,23 +16,23 @@ def get_inner_net(net: nt.OpenNet):
     trans, rout_trans, label_map = net.get_trans()
     flows = net.get_flows()
 
-    # a)Ô´¿âËùÖ»ÓĞ1¸ö(Note:×ÊÔ´Ö»ÔÚ×éºÏÍøµÄ³õÊ¼±êÊ¶ÖĞ)
+    # a)æºåº“æ‰€åªæœ‰1ä¸ª(Note:èµ„æºåªåœ¨ç»„åˆç½‘çš„åˆå§‹æ ‡è¯†ä¸­)
     inner_net_source = source.get_infor()[0]
 
-    # b)ÖÕÖ¹¿âËù1¸ö
+    # b)ç»ˆæ­¢åº“æ‰€1ä¸ª
     inner_net_sink = sinks[0].get_infor()[0]
 
-    # c)È·¶¨Á÷¼¯
+    # c)ç¡®å®šæµé›†
     inner_net_flows = []
     msg_res_places = msg_places + res_places
     for flow in flows:
         flow_from, flow_to = flow.get_infor()
-        # ÒÆ³ıÏûÏ¢Á÷ºÍ×ÊÔ´Á÷
+        # ç§»é™¤æ¶ˆæ¯æµå’Œèµ„æºæµ
         if flow_from in msg_res_places or flow_to in msg_res_places:
             continue
         inner_net_flows.append(flow)
 
-    # d)È·¶¨¿âËù
+    # d)ç¡®å®šåº“æ‰€
     inner_net_places = set()
     for flow in inner_net_flows:
         flow_from, flow_to = flow.get_infor()
@@ -50,27 +50,27 @@ def get_inner_net(net: nt.OpenNet):
         inner_net_flows,
     )
     inner_net.rout_trans = rout_trans
-    # ps:½»»¥±äÇ¨¼¯ÏÈÉèÎª[],ÓÉÖ®ºó¹ı³ÌÍø×éºÏÈ·¶¨
+    # ps:äº¤äº’å˜è¿é›†å…ˆè®¾ä¸º[],ç”±ä¹‹åè¿‡ç¨‹ç½‘ç»„åˆç¡®å®š
     inner_net.inter_trans = []
     return inner_net
 
 
-# 2.ÒÀ¾İXOR½«µ¥¸ö×éÖ¯µÄÄÚÍø½øĞĞ·Ö½â(Note:¹Ø¼üÊÇ»ñÈ¡·Ö½âºó±äÇ¨¼¯)-----------------------------
+# 2.ä¾æ®XORå°†å•ä¸ªç»„ç»‡çš„å†…ç½‘è¿›è¡Œåˆ†è§£(Note:å…³é”®æ˜¯è·å–åˆ†è§£åå˜è¿é›†)-----------------------------
 def decompose_inner_net(inner_net: InnerNet):
 
-    # 1.»ñÈ¡Ã¿¸ösplit·Ö³öµÄ±äÇ¨¼¯~~~~~~~~~~~~~~~~~~~~~~~~~
+    # 1.è·å–æ¯ä¸ªsplitåˆ†å‡ºçš„å˜è¿é›†~~~~~~~~~~~~~~~~~~~~~~~~~
     trans_in_each_split = []
-    # ÀûÓÃÍ¼»ñÈ¡split±äÇ¨¼¯
+    # åˆ©ç”¨å›¾è·å–splitå˜è¿é›†
     graph = inner_net.to_graph()
-    # Note:»ñÈ¡µ±Ç°ÍøÖĞËùÓĞ½øÈëºÍÍË³öÑ­»·µÄ±äÇ¨¼¯
+    # Note:è·å–å½“å‰ç½‘ä¸­æ‰€æœ‰è¿›å…¥å’Œé€€å‡ºå¾ªç¯çš„å˜è¿é›†
     source = inner_net.source
     dfs_obj = cu.DFS()
-    # Note:Í¬Ê±¿¼ÂÇwhileÑ­»·ºÍdo-whileÑ­»·
+    # Note:åŒæ—¶è€ƒè™‘whileå¾ªç¯å’Œdo-whileå¾ªç¯
     back_trans = dfs_obj.get_back_trans(source, graph)
     print('back_trans: ', back_trans)
     places = inner_net.places
     for place in places:
-        # Note:ÅÅ³ıÑ­»·Á÷
+        # Note:æ’é™¤å¾ªç¯æµ
         postSet = set(nt.get_postset(inner_net.flows,
                                      place)) - set(back_trans)
         if len(postSet) > 1:
@@ -78,47 +78,47 @@ def decompose_inner_net(inner_net: InnerNet):
 
     print('trans_in_each_split: ', trans_in_each_split)
 
-    # 2.µü´ú¼ÆËã»ñÈ¡·Ö½âºóµÄÄÚÍø(¼´Ö´ĞĞÂ·¾¶)~~~~~~~~~~~~~~~~~~~~~~~~~
+    # 2.è¿­ä»£è®¡ç®—è·å–åˆ†è§£åçš„å†…ç½‘(å³æ‰§è¡Œè·¯å¾„)~~~~~~~~~~~~~~~~~~~~~~~~~
     exec_paths = []
-    # ÔËĞĞ¶ÓÁĞ
+    # è¿è¡Œé˜Ÿåˆ—
     visiting_queue = [inner_net]
-    # µü´ú¼ÆËã
+    # è¿­ä»£è®¡ç®—
     while visiting_queue:
         from_inner_net = visiting_queue.pop(0)
-        # ÅĞ¶Ïµ±Ç°ÄÚÍøÊÇ·ñÄÜ¹»·Ö½â
+        # åˆ¤æ–­å½“å‰å†…ç½‘æ˜¯å¦èƒ½å¤Ÿåˆ†è§£
         result = can_decompose(trans_in_each_split, from_inner_net)
-        # 2.1 Èô²»ÄÜ·Ö½â(¼´²»º¬XOR)ÇÒÎ´Éú³É¹ı,Ôò½«ÆäÌí¼Óµ½·Ö½âÍøÁĞ±íÖĞ²¢Ìø¹ı¼ÆËã
+        # 2.1 è‹¥ä¸èƒ½åˆ†è§£(å³ä¸å«XOR)ä¸”æœªç”Ÿæˆè¿‡,åˆ™å°†å…¶æ·»åŠ åˆ°åˆ†è§£ç½‘åˆ—è¡¨ä¸­å¹¶è·³è¿‡è®¡ç®—
         if result is None:
             if from_inner_net_exist(from_inner_net, exec_paths):
                 continue
             exec_paths.append(from_inner_net)
             continue
-        # 2.2a ÈôÄÜ·Ö½â,ÔòÊ×ÏÈ»ñÈ¡Ã¿Ìõsplit±äÇ¨Òı³öµÄ°ü
+        # 2.2a è‹¥èƒ½åˆ†è§£,åˆ™é¦–å…ˆè·å–æ¯æ¡splitå˜è¿å¼•å‡ºçš„åŒ…
         print('split_trans: ', result[1])
         split_bags = gen_succ_bags(result, from_inner_net.flows)
         print('split_bags:', split_bags)
         trans_in_split_bags = []
         for split_bag in split_bags:
             trans_in_split_bags = trans_in_split_bags + split_bag
-        # 2.2b ¼ÆËãfrom_inner_netÖĞ³ısplit±äÇ¨Òı³öµÄ°üÖ®ÍâµÄÇ¨ÒÆ¼¯
+        # 2.2b è®¡ç®—from_inner_netä¸­é™¤splitå˜è¿å¼•å‡ºçš„åŒ…ä¹‹å¤–çš„è¿ç§»é›†
         rest_trans = list(
             set(from_inner_net.trans) - set(trans_in_split_bags))
         for split_bag in split_bags:
-            # ·Ö½âºóÃ¿¸öÆ¬¶ÎÖĞµÄ±äÇ¨¼¯
+            # åˆ†è§£åæ¯ä¸ªç‰‡æ®µä¸­çš„å˜è¿é›†
             frag_trans = split_bag + rest_trans
-            # µ±Ç°ÍøÖĞ³ıÆ¬¶ÎÖĞ±äÇ¨ÍâµÄÆäËû±äÇ¨¼¯(ĞèÒÆ³ı)
+            # å½“å‰ç½‘ä¸­é™¤ç‰‡æ®µä¸­å˜è¿å¤–çš„å…¶ä»–å˜è¿é›†(éœ€ç§»é™¤)
             rov_trans = list(set(from_inner_net.trans) - set(frag_trans))
             net_copy = copy.deepcopy(from_inner_net)
-            # ÒÆ³ı±äÇ¨¼°Æä¹ØÁªµÄÁ÷
+            # ç§»é™¤å˜è¿åŠå…¶å…³è”çš„æµ
             net_copy.rov_objs(rov_trans)
             for rov_tran in rov_trans:
                 net_copy.rov_flows_by_obj(rov_tran)
-            # ½øĞĞµü´ú·Ö½â
+            # è¿›è¡Œè¿­ä»£åˆ†è§£
             visiting_queue.append(net_copy)
     return exec_paths
 
 
-# ÅĞ¶Ïfrom_inner_netÊÇ·ñ°üº¬Ò»¸ötrans_in_each_split,Èôº¬ÓĞÔò¿É·Ö½â
+# åˆ¤æ–­from_inner_netæ˜¯å¦åŒ…å«ä¸€ä¸ªtrans_in_each_split,è‹¥å«æœ‰åˆ™å¯åˆ†è§£
 def can_decompose(trans_in_each_split, from_inner_net: InnerNet):
     for [place, split_trans] in trans_in_each_split:
         if set(split_trans) <= set(from_inner_net.trans):
@@ -126,7 +126,7 @@ def can_decompose(trans_in_each_split, from_inner_net: InnerNet):
     return None
 
 
-# ÅĞ¶Ïfrom_inner_netÊÇ·ñ´æÔÚ
+# åˆ¤æ–­from_inner_netæ˜¯å¦å­˜åœ¨
 def from_inner_net_exist(from_inner_net, dep_inner_nets):
     for dep_inner_net in dep_inner_nets:
         if Counter(from_inner_net.trans) == Counter(dep_inner_net.trans):
@@ -134,7 +134,7 @@ def from_inner_net_exist(from_inner_net, dep_inner_nets):
     return False
 
 
-# ÀûÓÃ±äÇ¨À©Õ¹ĞÎ³Éºó¼ÌÇ¨ÒÆ°ü
+# åˆ©ç”¨å˜è¿æ‰©å±•å½¢æˆåç»§è¿ç§»åŒ…
 def gen_succ_bags(result, flows):
     bags = []
     visited_trans = []
@@ -143,25 +143,25 @@ def gen_succ_bags(result, flows):
     for tran in split_trans:
         if tran in visited_trans:
             continue
-        # ÔËĞĞ¶ÓÁĞºÍÒÑ·ÃÎÊ¶ÓÁĞ
+        # è¿è¡Œé˜Ÿåˆ—å’Œå·²è®¿é—®é˜Ÿåˆ—
         visiting_queue = [tran]
         visited_queue = [tran]
-        # µü´ú¼ÆËã
+        # è¿­ä»£è®¡ç®—
         while visiting_queue:
             from_tran = visiting_queue.pop(0)
             to_places = nt.get_postset(flows, from_tran)
             to_trans = []
             for to_place in to_places:
-                # Note:Ìø¹ıÒı³ösplit_transµÄ·ÖÖ§¿âËù~~~~~~~~~~~~~~~~~~~~~~~~~
+                # Note:è·³è¿‡å¼•å‡ºsplit_transçš„åˆ†æ”¯åº“æ‰€~~~~~~~~~~~~~~~~~~~~~~~~~
                 if to_place == branch_place:
                     continue
-                # Note:ÅÅ³ıtranÖ®ÍâÓÉxorÒı³öµÄsplit±äÇ¨¼¯
+                # Note:æ’é™¤tranä¹‹å¤–ç”±xorå¼•å‡ºçš„splitå˜è¿é›†
                 rest_split_trans = set(split_trans) - set([tran])
-                # Note:ÅÅ³ı¿ÉÄÜµÄ·ÖÖ§Ç¨ÒÆ(¿ÉÄÜÓĞµ½split¿âËùµÄ»·)
+                # Note:æ’é™¤å¯èƒ½çš„åˆ†æ”¯è¿ç§»(å¯èƒ½æœ‰åˆ°splitåº“æ‰€çš„ç¯)
                 to_trans = list(
                     set(to_trans + nt.get_postset(flows, to_place)) -
                     rest_split_trans)
-            # ¼ÆËãtran¿É´ïµÄºó¼ÌÇ¨ÒÆ¼¯(±ÜÃâÇ°ºó¼¯ÖØ¸´)
+            # è®¡ç®—tranå¯è¾¾çš„åç»§è¿ç§»é›†(é¿å…å‰åé›†é‡å¤)
             for to_tran in to_trans:
                 if to_tran not in visited_queue:
                     visiting_queue.append(to_tran)
@@ -173,37 +173,4 @@ def gen_succ_bags(result, flows):
     return bags
 
 
-# -------------------------------²âÊÔ---------------------------------#
 
-if __name__ == '__main__':
-
-    # nets = gen_nets('/Users/moqi/Desktop/Petri net 1.xml')
-    # inner_net = get_inner_net(nets[1])
-    # tree_links, net_copy = rov_sync_links(inner_net)
-    # # print(tree_links)
-    # final_net = rov_redu_places(net_copy)
-    # final_net.print_infor()
-    # # final_net.inner_to_dot()
-    # # print(inner_net.gen_tree_links())
-    # # print(inner_net.to_graph())
-    # # print(inner_net.to_reserve_graph())
-
-    # nets = gen_nets('/Users/moqi/Desktop/New Petri net 1 2.xml')
-    # inner_nets = get_inner_nets(nets)
-    # # for inner_net in inner_nets:
-    # #     inner_net.print_infor()
-    # dep_inner_nets = decompose_inner_net(inner_nets[0])
-    # print('size: ', len(dep_inner_nets))
-    # for dep_inner_net in dep_inner_nets:
-    #     dep_inner_net.print_infor()
-
-    net = gen_nets('/Users/moqi/Desktop/ÁÙÊ±ÎÄ¼ş/2023.xml')[1]
-    inner_net = get_inner_net(net)
-    inner_net.inner_to_dot('abc')
-    dep_inner_nets = decompose_inner_net(inner_net)
-    for i, dep_inner_net in enumerate(dep_inner_nets):
-        dep_inner_net.print_infor()
-
-    # print(gen_succ_bags(['T1'], inner_nets[0].flows))
-
-# -------------------------------------------------------------------#
