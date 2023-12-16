@@ -391,19 +391,3 @@ def gen_nets(net_path):
     return bag_nets
 
 
-# -------------------------------测试---------------------------------#
-
-if __name__ == '__main__':
-
-    nets = gen_nets('/Users/moqi/Desktop/临时文件/2023.xml')
-    # net = nets[1]
-    # net.net_to_dot('abc', True)
-    # for net in nets:
-    #     net.print_infor()
-    #     net.net_to_dot()
-    # comp_net = get_compose_net(nets)
-    # comp_net.net_to_dot('comp_net', True)
-    # print('partner, places, trans:', len(nets), len(comp_net.places),
-    #       len(comp_net.trans))
-
-# -------------------------------------------------------------------#
