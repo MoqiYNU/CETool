@@ -9,15 +9,15 @@ import net_utils as nu
 import inner_utils as inu
 import reduce_utils as reu
 '''
-  ¶¨ÒåĞ­Í¬ÒµÎñ¹ı³Ì¹¤¾ßÀà,ËüÊÇÓ¦¼±¹ı³Ì×ÓÀà
-  1. ¿ØÖÆÁ÷ÓÉË³Ğò,Ñ¡Ôñ,²¢·¢ºÍµü´ú½á¹¹×é³É;
-  2. µü´ú½á¹¹Ö»º¬Repeat-Until½á¹¹;
-  3. ½»»¥ÊÇÒì²½µÄ;
-  4. ²»Éæ¼°×ÊÔ´ºÍÊ±¼äĞÅÏ¢.
+  å®šä¹‰ååŒä¸šåŠ¡è¿‡ç¨‹å·¥å…·ç±»,å®ƒæ˜¯åº”æ€¥è¿‡ç¨‹å­ç±»
+  1. æ§åˆ¶æµç”±é¡ºåº,é€‰æ‹©,å¹¶å‘å’Œè¿­ä»£ç»“æ„ç»„æˆ;
+  2. è¿­ä»£ç»“æ„åªå«Repeat-Untilç»“æ„;
+  3. äº¤äº’æ˜¯å¼‚æ­¥çš„;
+  4. ä¸æ¶‰åŠèµ„æºå’Œæ—¶é—´ä¿¡æ¯.
 '''
 
 
-# 1.×éºÏ¿ª·ÅÍø(ps:Òì²½×éºÏ)----------------------------------------------
+# 1.ç»„åˆå¼€æ”¾ç½‘(ps:å¼‚æ­¥ç»„åˆ)----------------------------------------------
 def get_compose_net(nets):
     if len(nets) == 0:
         print('no nets exist, exit...')
@@ -31,14 +31,14 @@ def get_compose_net(nets):
         return net
 
 
-# ×éºÏÁ½¸ö¿ª·ÅÍø
+# ç»„åˆä¸¤ä¸ªå¼€æ”¾ç½‘
 def compose_two_nets(net1: nt.OpenNet, net2: nt.OpenNet):
 
-    # 1)²úÉúÔ´ºÍÖÕÖ¹±êÊ¶~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # 1)äº§ç”Ÿæºå’Œç»ˆæ­¢æ ‡è¯†~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     source1, sinks1 = net1.get_start_ends()
     source2, sinks2 = net2.get_start_ends()
 
-    # ps:±ÜÃâÖØ¸´Ìí¼ÓÏûÏ¢(ÏûÏ¢¿ÉÒÔ³õÊ¼´æÔÚ)
+    # ps:é¿å…é‡å¤æ·»åŠ æ¶ˆæ¯(æ¶ˆæ¯å¯ä»¥åˆå§‹å­˜åœ¨)
     source_places = source1.get_infor()
     print(source1.get_infor())
     for place in source2.get_infor():
@@ -54,14 +54,14 @@ def compose_two_nets(net1: nt.OpenNet, net2: nt.OpenNet):
             sink = nt.Marking(sink1.get_infor() + sink2.get_infor())
             sinks.append(sink)
 
-    # 2)²úÉú¿âËù(²»ÄÜÖØ¸´)~~~~~~~~~~~~~~~~~~~~
+    # 2)äº§ç”Ÿåº“æ‰€(ä¸èƒ½é‡å¤)~~~~~~~~~~~~~~~~~~~~
     places1, inner_places1, msg_places1 = net1.get_places()
     places2, inner_places2, msg_places2 = net2.get_places()
     places = list(set(places1 + places2))
     inner_places = list(set(inner_places1 + inner_places2))
     msg_places = list(set(msg_places1 + msg_places2))
 
-    # 3)²úÉú±äÇ¨(ps:²»Éæ¼°Í¬²½±äÇ¨)~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # 3)äº§ç”Ÿå˜è¿(ps:ä¸æ¶‰åŠåŒæ­¥å˜è¿)~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     trans1, rout_trans1, tran_label_map1 = net1.get_trans()
     trans2, rout_trans2, tran_label_map2 = net2.get_trans()
     trans = []
@@ -74,7 +74,7 @@ def compose_two_nets(net1: nt.OpenNet, net2: nt.OpenNet):
         trans.append(tran2)
         tran_label_map[tran2] = tran_label_map2[tran2]
 
-    # 4)²úÉúÁ÷¹ØÏµ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # 4)äº§ç”Ÿæµå…³ç³»~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     flows1 = net1.get_flows()
     flows2 = net2.get_flows()
     flows = flows1 + flows2
@@ -85,19 +85,19 @@ def compose_two_nets(net1: nt.OpenNet, net2: nt.OpenNet):
     return openNet
 
 
-# 2.ÀûÓÃÎÈ¹Ì¼¯ÅĞ¶Ï¿ª·ÅÍønetÊÇ·ñÊÇÕıÈ·µÄ--------------------------------------
+# 2.åˆ©ç”¨ç¨³å›ºé›†åˆ¤æ–­å¼€æ”¾ç½‘netæ˜¯å¦æ˜¯æ­£ç¡®çš„--------------------------------------
 def net_is_correct(net):
     rrg = nu.gen_rg_with_subset(net)
-    # ¼ÆËãº¬ÓĞÏûÏ¢µÄÖÕÖ¹±êÊ¶
+    # è®¡ç®—å«æœ‰æ¶ˆæ¯çš„ç»ˆæ­¢æ ‡è¯†
     final_markings = []
     start, ends, states, trans = rrg.get_infor()
     for state in states:
         if is_final(state, ends, net.msg_places):
             final_markings.append(state)
-    # Note:Ã»ÓĞ¿É´ïµÄÖÕÖ¹±êÊ¶~~~~~~~~~
+    # Note:æ²¡æœ‰å¯è¾¾çš„ç»ˆæ­¢æ ‡è¯†~~~~~~~~~
     if not final_markings:
         return 'Fully Incorrect'
-    # ÔÚltsÉÏ¼ì²â
+    # åœ¨ltsä¸Šæ£€æµ‹
     rrg_to_lts, index_marking_map = rrg.rg_to_lts()
     final_indexs = []
     for final_marking in final_markings:
@@ -107,7 +107,7 @@ def net_is_correct(net):
                 break
     lts_start, lts_ends, lts_states, lts_trans = rrg_to_lts.get_infor()
     valid_states = []
-    # ¼ÆËãÃ¿¸ö×´Ì¬µÄÇ¨ÒÆ±Õ°ü
+    # è®¡ç®—æ¯ä¸ªçŠ¶æ€çš„è¿ç§»é—­åŒ…
     for state in lts_states:
         tran_closure = lu.gen_tran_closure(state, rrg_to_lts)
         # print('tran closure:', state, tran_closure)
@@ -121,7 +121,7 @@ def net_is_correct(net):
         return 'Partially Correct'
 
 
-# ÅĞ¶ÏstateÊÇ·ñÎªÖÕÖ¹±êÊ¶(ps:ÖÕÖ¹±êÊ¶ÖĞ¿ÉÒÔº¬ÓĞÊ£ÓàÏûÏ¢)
+# åˆ¤æ–­stateæ˜¯å¦ä¸ºç»ˆæ­¢æ ‡è¯†(ps:ç»ˆæ­¢æ ‡è¯†ä¸­å¯ä»¥å«æœ‰å‰©ä½™æ¶ˆæ¯)
 def is_final(state, ends, msg_places):
     places = state.get_infor()
     # print('places', places)
@@ -146,7 +146,7 @@ def valid(cou, msg_places):
     return True
 
 
-# 3.¹¹½¨¹«¹²Íø--------------------------------------------------------
+# 3.æ„å»ºå…¬å…±ç½‘--------------------------------------------------------
 def gen_public_net(net: nt.OpenNet):
 
     inner_net = inu.get_inner_net(net)
@@ -161,11 +161,11 @@ def gen_public_net(net: nt.OpenNet):
     for flow in net.flows:
         fl_from, fl_to = flow.get_infor()
         # print('flow', fl_from, fl_to)
-        if fl_from in public_trans:  #fl_fromÎª±äÇ¨
+        if fl_from in public_trans:  #fl_fromä¸ºå˜è¿
             if fl_to in net.msg_places:
                 msg_places.add(fl_to)
                 msg_flows.append(flow)
-        elif fl_to in public_trans:  #fl_toÎª±äÇ¨
+        elif fl_to in public_trans:  #fl_toä¸ºå˜è¿
             if fl_from in net.msg_places:
                 msg_places.add(fl_from)
                 msg_flows.append(flow)
@@ -179,11 +179,11 @@ def gen_public_net(net: nt.OpenNet):
     return public_net
 
 
-# »ñÈ¡Ã¿¸öÒµÎñ¹ı³ÌÖĞÄÚ²¿±äÇ¨
+# è·å–æ¯ä¸ªä¸šåŠ¡è¿‡ç¨‹ä¸­å†…éƒ¨å˜è¿
 def get_inter_trans(net: nt.OpenNet):
     inter_trans = []
     dfs_obj = cu.DFS()
-    # ¼ÆËãÑ­»·ÖĞtb±äÇ¨~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # è®¡ç®—å¾ªç¯ä¸­tbå˜è¿~~~~~~~~~~~~~~~~~~~~~~~~~~
     back_trans = []
     inner = iu.get_inner_net(net)
     source = inner.source
@@ -194,33 +194,33 @@ def get_inter_trans(net: nt.OpenNet):
         back_trans.append(circle[-1])
     comm_trans = get_comm_trans(net)
     for tran in net.trans:
-        # 5.1 ÅÅ³ıÍ¨ĞÅ±äÇ¨
+        # 5.1 æ’é™¤é€šä¿¡å˜è¿
         if tran in comm_trans:
             continue
-        # 5.2ÅÅ³ı¿ªÊ¼/½áÊø±äÇ¨
+        # 5.2æ’é™¤å¼€å§‹/ç»“æŸå˜è¿
         if tran.startswith('ti'):
             continue
         if tran.startswith('to'):
             continue
-        # 5.3 ÅÅ³ıÃªµã
+        # 5.3 æ’é™¤é”šç‚¹
         if tran.startswith('at'):
             continue
-        # 5.4 ÅÅ³ıand-split/join±äÇ¨
+        # 5.4 æ’é™¤and-split/joinå˜è¿
         if tran.startswith('tas'):
             continue
         if tran.startswith('taj'):
             continue
-        # 5.5 ÅÅ³ıÑ­»·ÖĞtb±äÇ¨
+        # 5.5 æ’é™¤å¾ªç¯ä¸­tbå˜è¿
         if tran in back_trans:
             continue
         inter_trans.append(tran)
     return inter_trans
 
 
-# »ñÈ¡Ã¿¸öÒµÎñ¹ı³ÌÖĞÒì²½Í¨ĞÅ±äÇ¨
+# è·å–æ¯ä¸ªä¸šåŠ¡è¿‡ç¨‹ä¸­å¼‚æ­¥é€šä¿¡å˜è¿
 def get_comm_trans(net: nt.OpenNet):
     comm_trans = set()
-    # Ìí¼ÓÏûÏ¢¿âËù¹ØÁªµÄÒì²½±äÇ¨
+    # æ·»åŠ æ¶ˆæ¯åº“æ‰€å…³è”çš„å¼‚æ­¥å˜è¿
     for flow in net.flows:
         flow_from, flow_to = flow.get_infor()
         if flow_from in net.msg_places:
@@ -230,18 +230,3 @@ def get_comm_trans(net: nt.OpenNet):
     return list(comm_trans)
 
 
-# -------------------------------²âÊÔ---------------------------------#
-
-if __name__ == '__main__':
-
-    # nets = ng.gen_nets('/Users/moqi/Desktop/ÁÙÊ±ÎÄ¼ş/2023.xml')
-    nets = ng.gen_nets('/Users/moqi/Desktop/Æô·¢°¸Àı/Motiving example.xml')
-    from_net = get_compose_net(nets)
-    from_net.net_to_dot('abc', False)
-    from_net.print_infor()
-    # result = net_is_correct(from_net)
-    # print(result)
-
-    # bottom_up_construction(nets, 1)
-
-# -------------------------------------------------------------------#
