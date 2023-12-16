@@ -6,8 +6,8 @@ We develop a correctness enforcement tool called CETool, which consists of two m
 
 The analyzer consists of three components, i.e., a reducer used to obtain the public process, a generator employed to obtain correct plans, and a refactor to generate the refactored business process. Using CETool, the refactored processes of CL and SU are generated as follows.
 
-![ref_net0](https://github.com/MoqiYNU/CETool/assets/49392929/03d78ac8-b2af-47c2-8be1-28af3a2cd7ca)
+![ref_net0](https://github.com/MoqiYNU/CETool/assets/49392929/bcadaa55-ca2b-4fc8-823d-44b09554b6bd) 
 
-![ref_net1](https://github.com/MoqiYNU/CETool/assets/49392929/3efda9ba-6d04-466d-a216-188de67aa4a5) 
+![ref_net1](https://github.com/MoqiYNU/CETool/assets/49392929/f991f3b3-fa2f-48c1-a954-1939b58e759b) 
 
 [55]	Bonet P, Llado C, Puigjaner R, et al. PIPE v2.5: a Petri net tool for performance modeling. Proc. 23rd Latin American Confer-ence on Informatics (CLEI 2007), 2007, pp.1-12.
