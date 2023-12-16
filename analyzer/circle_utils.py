@@ -4,13 +4,13 @@ import net_gen as ng
 import inner_utils as iu
 
 
-# 1.¶¨Òå»ñÈ¡ÍøÖĞback±äÇ¨µÄÀà--------------------------------------------------
+# 1.å®šä¹‰è·å–ç½‘ä¸­backå˜è¿çš„ç±»--------------------------------------------------
 class DFS(object):
 
     def __init__(self):
         self.circles = []
 
-    # µİ¹éDFSÕÒ³öÓĞÏòÍ¼ÖĞËùÓĞµÄ»·
+    # é€’å½’DFSæ‰¾å‡ºæœ‰å‘å›¾ä¸­æ‰€æœ‰çš„ç¯
     def dfs(self, start, graph):
         gen_list = []
         gen_list.append(start)
@@ -19,19 +19,19 @@ class DFS(object):
             # print('gen_list:', gen_list)
             last = gen_list[-1]
             # print('last:', last)
-            # ·ÖÁÑ'#'Éú³É½áµãµÄºó¼Ì(Note:Ä³Ğ©½áµãÈçÖÕÖ¹½áµã¿ÉÄÜÃ»ÓĞºó¼Ì½áµã)
+            # åˆ†è£‚'#'ç”Ÿæˆç»“ç‚¹çš„åç»§(Note:æŸäº›ç»“ç‚¹å¦‚ç»ˆæ­¢ç»“ç‚¹å¯èƒ½æ²¡æœ‰åç»§ç»“ç‚¹)
             if graph[last]:
                 nodes = graph[last].split('#')
             else:
                 nodes = []
             # print('nodes:', nodes)
             if nodes == [] or self.is_exist(nodes, gen_list):
-                # »ñÈ¡»·~~~~~~~~~~~~~~~~~~~~~~~~~~
+                # è·å–ç¯~~~~~~~~~~~~~~~~~~~~~~~~~~
                 if nodes:
                     for node in nodes:
                         index = gen_list.index(node)
                         circle = gen_list[index:]
-                        # Ìí¼ÓÎ´²úÉú¹ıµÄ»·
+                        # æ·»åŠ æœªäº§ç”Ÿè¿‡çš„ç¯
                         if self.is_gen_circle(circle, self.circles):
                             continue
                         self.circles.append(circle)
@@ -44,13 +44,13 @@ class DFS(object):
                 if unvis_node is None:
                     vis_list.append(last)
                     gen_list.pop()
-                    # Note:ÖØÖÃ·ÃÎÊ
+                    # Note:é‡ç½®è®¿é—®
                     self.reset_vis(last, nodes, vis_list, gen_list)
                     # print('gen_list', gen_list)
                 else:
                     gen_list.append(unvis_node)
 
-    # »ñÈ¡do-whileÖĞback±äÇ¨,e.g ['P2', 'T3', 'P3', 'T4', 'P4', 'T6']
+    # è·å–do-whileä¸­backå˜è¿,e.g ['P2', 'T3', 'P3', 'T4', 'P4', 'T6']
     def get_back_trans(self, start, graph):
         self.dfs(start, graph)
         back_trans = set()
@@ -58,7 +58,7 @@ class DFS(object):
             back_trans.add(circle[-1])
         return list(back_trans)
 
-    # ÅĞ¶Ïµ±Ç°»·ÊÇ·ñ²úÉú¹ı
+    # åˆ¤æ–­å½“å‰ç¯æ˜¯å¦äº§ç”Ÿè¿‡
     def is_gen_circle(self, circle, circles):
         for temp_circle in circles:
             if Counter(circle) == Counter(temp_circle):
@@ -75,7 +75,7 @@ class DFS(object):
 
     def first_unvis_node(self, nodes, vis_list, gen_list):
         for node in nodes:
-            # Note:±ÜÃâµ½Ö®Ç°×ß¹ı½áµãµÄÑ­»·
+            # Note:é¿å…åˆ°ä¹‹å‰èµ°è¿‡ç»“ç‚¹çš„å¾ªç¯
             if node in gen_list:
                 continue
             if node not in vis_list:
@@ -84,23 +84,23 @@ class DFS(object):
 
     def reset_vis(self, last, nodes, vis_list, gen_list):
         for node in nodes:
-            # Note:ÖØÖÃÔªËØÒ²Ğè¿¼ÂÇ×ÔÑ­»·(node == last)
+            # Note:é‡ç½®å…ƒç´ ä¹Ÿéœ€è€ƒè™‘è‡ªå¾ªç¯(node == last)
             if node in gen_list or node == last:
                 continue
             vis_list.remove(node)
 
 
-# 2.È·¶¨ÍøÖĞÄ³¸ö±äÇ¨ÊÇ·ñÔÚ»·ÖĞ--------------------------------------------------
+# 2.ç¡®å®šç½‘ä¸­æŸä¸ªå˜è¿æ˜¯å¦åœ¨ç¯ä¸­--------------------------------------------------
 class DeterCircles(object):
 
     def __init__(self):
-        # ÓÃÓÚÑ­»·¿éºÍÑ¡Ôñ¿éµÄ±äÁ¿
+        # ç”¨äºå¾ªç¯å—å’Œé€‰æ‹©å—çš„å˜é‡
         self.visited = []
         self.trace = []
         self.has_circle = False
         self.circles = []
 
-    # µİ¹éDFSÕÒ³öÓĞÏòÍ¼ÖĞËùÓĞµÄ»·
+    # é€’å½’DFSæ‰¾å‡ºæœ‰å‘å›¾ä¸­æ‰€æœ‰çš„ç¯
     def dfs(self, start, graph):
         if (start in self.visited):
             if (start in self.trace):
@@ -124,7 +124,7 @@ class DeterCircles(object):
                 self.dfs(child, graph)
         self.trace.pop()
 
-    # ÅĞ¶ÏtranÊÇ·ñÔÚ»·ÖĞ
+    # åˆ¤æ–­tranæ˜¯å¦åœ¨ç¯ä¸­
     def is_in_circle(self, tran, graph):
         self.dfs(tran, graph)
         for circle in self.circles:
@@ -133,17 +133,4 @@ class DeterCircles(object):
         return False
 
 
-# -------------------------------²âÊÔ---------------------------------#
 
-if __name__ == '__main__':
-
-    dfs_obj = DFS()
-    net = ng.gen_nets('/Users/moqi/Desktop/New Petri net 112.xml')[0]
-    inner = iu.get_inner_net(net)
-    to_graph = inner.to_graph()
-    # Note:»ñÈ¡µ±Ç°ÍøÖĞËùÓĞÖØĞÂ½øÈëÑ­»·µÄback±äÇ¨¼¯
-    source = inner.source
-    dfs_obj.dfs(source, to_graph)
-    print(dfs_obj.get_back_trans('P0', to_graph))
-
-# -------------------------------------------------------------------#
