@@ -80,7 +80,7 @@ def cor_plan_exist(cor_plan, correct_plans):
 
 if __name__ == '__main__':
 
-   
+    # 'your_PNML_file_path' is the path of your PNML file
     nets = ng.gen_nets('your_PNML_file_path')
     plan_enforce(nets)
    
