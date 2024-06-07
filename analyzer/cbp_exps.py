@@ -6,21 +6,21 @@ import cbp_utils as cbpu
 import net_gen as ng
 import prepro_utils as ppu
 
-# Exp 1.¿¼ÂÇÒşË½±£»¤µÄÃæÏò¼Æ»®µÄÆÈÊ¹-----------------------------------------------
+# Exp 1.è€ƒè™‘éšç§ä¿æŠ¤çš„é¢å‘è®¡åˆ’çš„è¿«ä½¿-----------------------------------------------
 
-# netsÎª²ÎÓë×éÖ¯        #
-# µÚi¸ö²ÎÓë×éÖ¯         #
+# netsä¸ºå‚ä¸ç»„ç»‡        #
+# ç¬¬iä¸ªå‚ä¸ç»„ç»‡         #
 
 
 def plan_enforce(nets):
 
-    # 1)»ñÈ¡µÚi¸öÒµÎñ¹ı³ÌµÄË½ÓĞÖ´ĞĞÂ·¾¶~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # 1)è·å–ç¬¬iä¸ªä¸šåŠ¡è¿‡ç¨‹çš„ç§æœ‰æ‰§è¡Œè·¯å¾„~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     update_nets = []
     public_nets = []
     for i, net_i in enumerate(nets):
         insert_se_net_i = ppu.insert_start_end_trans(net_i, i)
         insert_and_net_i = ppu.insert_and_split_join(insert_se_net_i, i)
-        # Note:ĞèÌáÇ°²åÈëÃªµã,¼´ÔÚÒµÎñ¹ı³ÌÖĞ²åÈë
+        # Note:éœ€æå‰æ’å…¥é”šç‚¹,å³åœ¨ä¸šåŠ¡è¿‡ç¨‹ä¸­æ’å…¥
         insert_anchor_net_i = ppu.insert_anchors(insert_and_net_i, i)
         update_nets.append(insert_anchor_net_i)
         # insert_anchor_net_i.net_to_dot('public_net{}'.format(i), False)
@@ -28,19 +28,19 @@ def plan_enforce(nets):
         # public_net_i.net_to_dot('public_net{}'.format(i), False)
         public_nets.append(public_net_i)
 
-    # 2)»ñÈ¡¹«¹²¹ı³ÌµÄÖ´ĞĞÂ·¾¶~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # 2)è·å–å…¬å…±è¿‡ç¨‹çš„æ‰§è¡Œè·¯å¾„~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     exec_paths_set = []
     for public_net in public_nets:
         exec_paths = plu.get_exec_path_nets(public_net)
         exec_paths_set.append(exec_paths)
 
-    # 3)¹¹½¨¼Æ»®~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # 3)æ„å»ºè®¡åˆ’~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     trans_in_exec_path_comp = plu.compute_trans_in_exec_path_comp(
         exec_paths_set)
     comp_net = cbpu.get_compose_net(public_nets)
     # comp_net.net_to_dot('comp_net', False)
 
-    # 4)¹¹½¨ÕıÈ·¼Æ»®~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # 4)æ„å»ºæ­£ç¡®è®¡åˆ’~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     correct_plans = []
     prohibit_back_trans = []
     plans = plu.gen_plans(comp_net, trans_in_exec_path_comp)
@@ -58,7 +58,7 @@ def plan_enforce(nets):
                 correct_plans.append(cor_plan)
             # plan.net_to_dot('plan{}'.format(index), False)
 
-    # 5)²úÉúÖØ¹¹¹ı³Ì~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    # 5)äº§ç”Ÿé‡æ„è¿‡ç¨‹~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     ref_nets = []
     for i, net in enumerate(update_nets):
         # net.net_to_dot('net{}'.format(i), False)
@@ -76,12 +76,12 @@ def cor_plan_exist(cor_plan, correct_plans):
     return False
 
 
-# -------------------------------²âÊÔ---------------------------------#
+# -------------------------------æµ‹è¯•---------------------------------#
 
 if __name__ == '__main__':
 
    
-    nets = ng.gen_nets('/Users/moqi/Desktop/Æô·¢°¸Àı/Motiving example.xml')
+    nets = ng.gen_nets('your_PNML_file_path')
     plan_enforce(nets)
    
 
