@@ -12,6 +12,6 @@ The analyzer consists of three components, i.e., a reducer used to obtain the pu
 
 [55]	Bonet P, Llado C, Puigjaner R, et al. PIPE v2.5: a Petri net tool for performance modeling. Proc. 23rd Latin American Confer-ence on Informatics (CLEI 2007), 2007, pp.1-12.
 
-# Guidelines for using CETool
+# Guideline for using CETool
 1. One needs to first import the model (available at: https://github.com/MoqiYNU/CETool/tree/main/modeler) into Eclipse and then run the file "RunGui.Java" located in its src directory. In this way, one starts the modeler and can visually build business processes within it. Once the business processes are modeled, they can be exported as a PNML file through the modeler's save operation.
 2. One needs to import the analyzer (available at: https://github.com/MoqiYNU/CETool/tree/main/analyzer) into VS Code and runs the file "cbp_exps.py" in it, then the refactored processes of business processes can be generated and displayed in the form of dot files.
